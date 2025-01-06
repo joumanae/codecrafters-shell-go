@@ -20,9 +20,14 @@ func main() {
 			os.Exit(1)
 		}
 		cmd := strings.TrimSpace(line)
+		if strings.HasPrefix(cmd, "echo") {
+			cmd = "echo"
+		}
 		switch cmd {
 		case "exit 0":
 			os.Exit(0)
+		case "echo":
+			fmt.Printf("%v", EchoCommand(line))
 		default:
 			fmt.Printf("%s: command not found \n", cmd)
 
@@ -30,4 +35,9 @@ func main() {
 
 	}
 
+}
+
+func EchoCommand(cmd string) string {
+	resp := strings.TrimPrefix(cmd, "echo ")
+	return resp
 }
