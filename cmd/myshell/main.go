@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -36,7 +37,7 @@ func main() {
 		case "type":
 			fmt.Printf("%v", IsShellBuiltin(line))
 		default:
-			fmt.Printf("%s: command not found \n", cmd)
+			RunProgram(line)
 
 		}
 
@@ -64,7 +65,7 @@ func IsShellBuiltin(cmd string) string {
 		inputs := strings.Split(strings.TrimSpace(cmd), " ")
 		fpaths := FindPaths(inputs[1:])
 		if fpaths == inputs[0] {
-			return fmt.Sprintf("%s: not found\n", inputs[0])
+			return fmt.Sprintf("%s: not found", inputs[0])
 		}
 		return fmt.Sprintf("%s\n", fpaths)
 	}
@@ -80,4 +81,16 @@ func FindPaths(args []string) string {
 		}
 	}
 	return fmt.Sprintf("%s: not found", args[0])
+}
+
+func RunProgram(cmd string) {
+	cmds := strings.Split(strings.TrimSpace(cmd), " ")
+	command := exec.Command(cmds[0], cmds[1:]...)
+	command.Stderr = os.Stderr
+	command.Stdout = os.Stdout
+
+	err := command.Run()
+	if err != nil {
+		fmt.Printf("%s: command not found\n", cmds[0])
+	}
 }
