@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -49,7 +50,6 @@ func EchoCommand(cmd string) string {
 }
 
 func IsShellBuiltin(cmd string) string {
-
 	builtin := strings.TrimSpace(strings.TrimPrefix(cmd, "type "))
 
 	builtins := map[string]bool{
@@ -60,6 +60,24 @@ func IsShellBuiltin(cmd string) string {
 
 	if builtins[builtin] {
 		return fmt.Sprintf("%s is a shell builtin\n", builtin)
+	} else {
+		inputs := strings.Split(strings.TrimSpace(cmd), " ")
+		fpaths := FindPaths(inputs[1:])
+		if fpaths == inputs[0] {
+			return fmt.Sprintf("%s: not found\n", inputs[0])
+		}
+		return fmt.Sprintf("%s\n", fpaths)
 	}
-	return fmt.Sprintf("%s: not found\n", builtin)
+
+}
+
+func FindPaths(args []string) string {
+	paths := strings.Split(os.Getenv("PATH"), ":")
+	for _, path := range paths {
+		fp := filepath.Join(path, args[0])
+		if _, err := os.Stat(fp); err == nil {
+			return fp
+		}
+	}
+	return fmt.Sprintf("%s: not found", args[0])
 }
