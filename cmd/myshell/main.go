@@ -36,6 +36,9 @@ func main() {
 			fmt.Printf("%v", EchoCommand(line))
 		case "type":
 			fmt.Printf("%v", IsShellBuiltin(line))
+		case "pwd":
+			pwd, _ := os.Getwd()
+			fmt.Println(pwd)
 		default:
 			RunProgram(line)
 
@@ -57,6 +60,7 @@ func IsShellBuiltin(cmd string) string {
 		"echo": true,
 		"exit": true,
 		"type": true,
+		"pwd":  true,
 	}
 
 	if builtins[builtin] {
