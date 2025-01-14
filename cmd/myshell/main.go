@@ -28,6 +28,13 @@ func main() {
 		if strings.HasPrefix(cmd, "type") {
 			cmd = "type"
 		}
+		if strings.HasPrefix(cmd, "cd") {
+			cmd = "cd"
+		}
+
+		args := strings.TrimPrefix(line, "cd")
+
+		newargs := strings.Fields(args)
 
 		switch cmd {
 		case "exit 0":
@@ -39,6 +46,8 @@ func main() {
 		case "pwd":
 			pwd, _ := os.Getwd()
 			fmt.Println(pwd)
+		case "cd":
+			CDCommand(newargs)
 		default:
 			RunProgram(line)
 
@@ -51,6 +60,13 @@ func main() {
 func EchoCommand(cmd string) string {
 	resp := strings.TrimPrefix(cmd, "echo ")
 	return resp
+}
+
+func CDCommand(args []string) {
+	command := strings.TrimSpace(args[0])
+	if err := os.Chdir(command); err != nil {
+		fmt.Fprintf(os.Stdout, "%s: No such file or directory\n", command)
+	}
 }
 
 func IsShellBuiltin(cmd string) string {
